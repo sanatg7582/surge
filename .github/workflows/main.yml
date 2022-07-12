@@ -1,15 +1,32 @@
-- name: 🔂 Surge PR Preview
-  # You may pin to the exact commit or the version.
-  # uses: afc163/surge-preview@d8947534eca16d181cb5648060190580a0f93ea3
-  uses: afc163/surge-preview@v1.0.0
-  with:
-    # surge.sh token
-    surge_token: 30aef4689fd9ae7f0b8b5a41a16af04b
-    # github token
-    github_token: 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
-    # build scripts
-    build: # optional, default is npm install
-npm run build
+name: Deploy
 
-    # dist folder to deploy
-    dist: # optional, default is public
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Install node version 12
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      # Install npm packages
+      - name: Install packages
+        run: npm install
+
+      # Build react app
+      - name: Build the app
+        run: npm run build
+
+      # Install Surge 
+      - name: Install Surge
+        run: npm install -g surge
+
+      # Deploy to the defined URL using the token
+      - name: Deploy to surge
+        run: surge ./build URL_TO_DEPLOY_TO --token ${{secrets.TOKEN}}
